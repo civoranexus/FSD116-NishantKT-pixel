@@ -12,5 +12,9 @@ router.get("/",(req,res)=>
   res.status(200).json(plants);
 }
 );
+router.post("/",(req,res)=>{
+    const plant=addPlant(req.body);
+    res.json(plant);}
+    )
 
 module.exports=router;
