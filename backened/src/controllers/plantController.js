@@ -1,6 +1,6 @@
 const Plant = require("../models/Plant");
 let plants=[];
-const addPlant=(planData)=>{
+const addPlant=(plantData)=>{
   plants.push(plantData);
   return plants;};
 const getallPlants=()=>{
