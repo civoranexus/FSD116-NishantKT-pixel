@@ -3,18 +3,18 @@ const router=express.Router();
 
 const {
     addPlant,
-    getallPlants
+    getAllPlants
 }=require("../controllers/plantController");
 
-router.get("/",(req,res)=>
+router.get("/all",(req,res)=>
 {
-  const plants=getallPlants();
+  const plants=getAllPlants();
   res.status(200).json(plants);
 }
 );
-router.post("/",(req,res)=>{
+router.post("/add",(req,res)=>{
     const plant=addPlant(req.body);
-    res.json(plant);}
+    res.status(201).json(plant);}
     )
 
 module.exports=router;
