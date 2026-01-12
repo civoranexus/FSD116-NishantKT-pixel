@@ -3,7 +3,9 @@ const router=express.Router();
 
 const {
     addPlant,
-    getAllPlants
+    getAllPlants,
+    updatePlant,
+    deletePlant
 }=require("../controllers/plantController");
 
 router.get("/all",(req,res)=>
@@ -16,5 +18,25 @@ router.post("/add",(req,res)=>{
     const plant=addPlant(req.body);
     res.status(201).json(plant);}
     )
+router.put("/:index", (req,res)=>{
+    const updatedPlant= updatePlant(
+        req.params.index,
+        req.body
+    );
+    if(!updatedPlant){
+        return res.status(404).json({ message:"Plant not found"});
+    }
+    res.json(updatedPlant);
+}
+);
 
+router.delete("/:index",(req,res)=>{
+    const deletedPlant=deletePlant(req.params.index);
+
+    if(!deletedPlant){
+        return res.status(404).json({message:"Plant not found"});
+    }
+    res.json({message:"Plant deleted successfully"});
+}
+);
 module.exports=router;

@@ -6,7 +6,26 @@ const addPlant=(plantData)=>{
 const getAllPlants=()=>{
   return plants;
 };
+
+const updatePlant =(index,updatedData)=>{
+   if(plants[index]){
+    plants[index]=
+    {...plants[index], ...updatedData };
+    return plants[index];
+   }
+   return null;
+};
+
+const deletePlant =(index)=>{
+   if(plants[index]){
+    const removedPlant=plants.splice(index,1);
+    return removedPlant;
+   }
+   return null;
+};
 module.exports={
   addPlant,
-  getAllPlants
+  getAllPlants,
+  updatePlant,
+  deletePlant
 };
