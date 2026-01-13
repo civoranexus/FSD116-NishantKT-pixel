@@ -1,6 +1,11 @@
 const Plant = require("../models/Plant");
 let plants=[];
+
 const addPlant=(plantData)=>{
+  const { name,price,category} = plantData;
+  if(!name  || !price || !category)
+  {  return null;
+}
   plants.push(plantData);
   return plantData;};
 const getAllPlants=()=>{

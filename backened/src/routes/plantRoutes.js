@@ -16,6 +16,9 @@ router.get("/all",(req,res)=>
 );
 router.post("/add",(req,res)=>{
     const plant=addPlant(req.body);
+    if(!plant)
+    {return res.status(400).json({message:"all fields(name,price,category) are required"});
+    }
     res.status(201).json(plant);}
     )
 router.put("/:index", (req,res)=>{
