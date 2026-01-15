@@ -21,11 +21,9 @@ router.post("/add",(req,res)=>{
     }
     res.status(201).json(plant);}
     )
-router.put("/:index", (req,res)=>{
-    const updatedPlant= updatePlant(
-        req.params.index,
-        req.body
-    );
+router.put("/:id", (req,res)=>{
+    const id=parseInt(req.params.id);
+    const updatedPlant= updatePlant(id,req.body );
     if(!updatedPlant){
         return res.status(404).json({ message:"Plant not found"});
     }
@@ -33,8 +31,9 @@ router.put("/:index", (req,res)=>{
 }
 );
 
-router.delete("/:index",(req,res)=>{
-    const deletedPlant=deletePlant(req.params.index);
+router.delete("/:id",(req,res)=>{
+    const id=parseInt(req.params.id);
+    const deletedPlant=deletePlant(id);
 
     if(!deletedPlant){
         return res.status(404).json({message:"Plant not found"});

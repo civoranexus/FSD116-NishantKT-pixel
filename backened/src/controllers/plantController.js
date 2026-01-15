@@ -6,27 +6,31 @@ const addPlant=(plantData)=>{
   if(!name  || !price || !category)
   {  return null;
 }
+  const newPlant={
+    id:plants.length + 1,
+    name,
+    price,
+    category
+  };
   plants.push(plantData);
   return plantData;};
 const getAllPlants=()=>{
   return plants;
 };
 
-const updatePlant =(index,updatedData)=>{
-   if(plants[index]){
-    plants[index]=
-    {...plants[index], ...updatedData };
-    return plants[index];
+const updatePlant =(id,updatedData)=>{
+  const plant=plants.find(p=>p.id===id);
+   if(!plant){
+    return null;
    }
-   return null;
+    Object.assign(plant,updatedData);
+   return plant;
 };
 
-const deletePlant =(index)=>{
-   if(plants[index]){
-    const removedPlant=plants.splice(index,1);
-    return removedPlant;
-   }
-   return null;
+const deletePlant =(id)=>{
+  const index =plants.findIndex(p=>p.id===id);
+  if(index=== -1){return null;}
+   return plants.splice(index,1);
 };
 module.exports={
   addPlant,
