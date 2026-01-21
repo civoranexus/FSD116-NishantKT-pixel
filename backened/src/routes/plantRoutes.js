@@ -14,7 +14,8 @@ router.get("/all",(req,res)=>
   res.status(200).json(plants);
 }
 );
-router.post("/add",(req,res)=>{
+const validatePlant=require("../middleware/valiadatePlant");
+router.post("/add",validatePlant,(req,res)=>{
     const plant=addPlant(req.body);
     if(!plant)
     {return res.status(400).json({message:"all fields(name,price,category) are required"});
