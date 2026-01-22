@@ -5,13 +5,22 @@ const {
     addPlant,
     getAllPlants,
     updatePlant,
-    deletePlant
+    deletePlant,
+    getPlantById
 }=require("../controllers/plantController");
 
 router.get("/all",(req,res)=>
 {
   const plants=getAllPlants();
   res.status(200).json(plants);
+}
+);
+router.get("/:id",(req,res)=>{
+    const plant=getPlantById(req.params.id);
+    if(!plant){
+        return res.status(404).json({message:"Plant not found"});
+    }
+    res.status(200).json(plant);
 }
 );
 const validatePlant=require("../middleware/valiadatePlant");

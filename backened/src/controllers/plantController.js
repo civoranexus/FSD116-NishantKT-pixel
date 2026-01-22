@@ -43,9 +43,15 @@ const deletePlant =(id)=>{
    console.log("plant deleted successfully:",removed[0]);
    return removed;
 };
+
+const getPlantById=(id)=>{
+  return plants.find(p=>p.id===id);
+};
 module.exports={
   addPlant,
   getAllPlants,
   updatePlant,
-  deletePlant
+  deletePlant,
+  getPlantById
+
 };
