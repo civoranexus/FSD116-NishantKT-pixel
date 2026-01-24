@@ -35,23 +35,31 @@ const updatePlant =(id,updatedData)=>{
 
 const deletePlant =(id)=>{
   console.log(`Delete request for plant id:${id}`);
-  const index =plants.findIndex(p=>p.id===id);
+  const index =plants.findIndex(p=>p.id==id);
   if(index=== -1){
     console.log("delete failed:Plant not found");
     return null;}
    const removed= plants.splice(index,1);
    console.log("plant deleted successfully:",removed[0]);
-   return removed;
+   return removed[0];
+};
+
+const searchPlants=(query)=>{
+  const {name,category}=query;
+  return plants.filter(plant=>{
+    return ((name && plant.name.toLowerCase().includes(name.toLowerCase())) || (category && plant.category.toLowerCase()===category.toLowerCase())
+  );
+  });
 };
 
 const getPlantById=(id)=>{
-  return plants.find(p=>p.id===id);
+  return plants.find(p=>p.id==id);
 };
 module.exports={
   addPlant,
   getAllPlants,
   updatePlant,
   deletePlant,
-  getPlantById
-
+  getPlantById,
+  searchPlants
 };
