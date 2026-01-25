@@ -7,13 +7,18 @@ const {
     updatePlant,
     deletePlant,
     getPlantById,
-    searchPlants
+    searchPlants,
+    sortPlants
 }=require("../controllers/plantController");
 
 router.get("/all",(req,res)=>
-{
-  const plants=getAllPlants();
-  res.status(200).json(plants);
+{ const page=parseInt(req.query.page) || 1;
+    const limit=parseInt(req.query.limit)||5;
+    const sortby=req.query.sortby;
+    const order=req.query.order|| "asc";
+  let plants=getAllPlants(page,limit);
+  plants=sortPlants(plants,sortby,order);
+  res.status(200).json({page,limit,sortby,order,data:plants});
 }
 );
 router.get("/search",(req,res)=>{

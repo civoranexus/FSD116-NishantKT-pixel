@@ -17,8 +17,10 @@ const addPlant=(plantData)=>{
   plants.push(newPlant);
   console.log("Plant added successfully:",newPlant);
   return newPlant;};
-const getAllPlants=()=>{
-  return plants;
+const getAllPlants=(page=1,limit=5)=>{
+  const startIndex=(page -1)*limit;
+  const endIndex=startIndex +limit;
+  return plants.slice(startIndex,endIndex);
 };
 
 const updatePlant =(id,updatedData)=>{
@@ -52,6 +54,19 @@ const searchPlants=(query)=>{
   });
 };
 
+const sortPlants=(plants,sortby,order='asc')=>{
+  if(!sortby)
+    return plants;
+  return plants.sort((a,b)=>{
+    if(sortby==="price")
+    {return order ==="asc"? a.price -b.price :b.price -a.price;}
+    if(sortby==="name"){
+      return order ==="asc" ? a.name.localeCompare(b.name):b.name.localeCompare(a.name);
+    }
+    return 0;
+  });
+};
+
 const getPlantById=(id)=>{
   return plants.find(p=>p.id==id);
 };
@@ -61,5 +76,6 @@ module.exports={
   updatePlant,
   deletePlant,
   getPlantById,
-  searchPlants
+  searchPlants,
+  sortPlants
 };
