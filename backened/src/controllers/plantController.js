@@ -1,76 +1,104 @@
-const Plant = require("../models/Plant");
-let plants=[];
+let plants = [];
 
-const addPlant=(plantData)=>{
-  console.log("Add plant request recieved:",plantData);
-  const { name,price,category} = plantData;
-  if(!name  || !price || !category)
-  { console.log("Add plant failed:Missing fields"); 
-    return null;
-}
-  const newPlant={
-    id:plants.length + 1,
+
+const addPlant = (plantData) => {
+  const { name, price, category } = plantData;
+
+  if (!name || price === undefined || !category) {
+    const error = new Error("All fields (name, price, category) are required");
+    error.status = 400;
+    throw error;
+  }
+
+  const newPlant = {
+    id: plants.length + 1,
     name,
     price,
     category
   };
+
   plants.push(newPlant);
-  console.log("Plant added successfully:",newPlant);
-  return newPlant;};
-const getAllPlants=(page=1,limit=5)=>{
-  const startIndex=(page -1)*limit;
-  const endIndex=startIndex +limit;
-  return plants.slice(startIndex,endIndex);
+  return newPlant;
 };
 
-const updatePlant =(id,updatedData)=>{
-  console.log(`upadte request for plant ID:${id}`,updatedData);
-  const plant=plants.find(p=>p.id===id);
-   if(!plant){
-    console.log("update failed:Plant not found");
-    return null;
-   }
-    Object.assign(plant,updatedData);
-    console.log("Plant updated successfully",plant);
-   return plant;
+const getAllPlants = (page = 1, limit = 5) => {
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  return plants.slice(startIndex, endIndex);
 };
 
-const deletePlant =(id)=>{
-  console.log(`Delete request for plant id:${id}`);
-  const index =plants.findIndex(p=>p.id==id);
-  if(index=== -1){
-    console.log("delete failed:Plant not found");
-    return null;}
-   const removed= plants.splice(index,1);
-   console.log("plant deleted successfully:",removed[0]);
-   return removed[0];
+const updatePlant = (id, updatedData) => {
+  const plant = plants.find(p => p.id == id);
+
+  if (!plant) {
+    const error = new Error("Plant not found");
+    error.status = 404;
+    throw error;
+  }
+
+  Object.assign(plant, updatedData);
+  return plant;
 };
 
-const searchPlants=(query)=>{
-  const {name,category}=query;
-  return plants.filter(plant=>{
-    return ((name && plant.name.toLowerCase().includes(name.toLowerCase())) || (category && plant.category.toLowerCase()===category.toLowerCase())
-  );
+
+const deletePlant = (id) => {
+  const index = plants.findIndex(p => p.id == id);
+
+  if (index === -1) {
+    const error = new Error("Plant not found");
+    error.status = 404;
+    throw error;
+  }
+
+  const removedPlant = plants.splice(index, 1);
+  return removedPlant[0];
+};
+
+
+const searchPlants = (query) => {
+  const { name, category } = query;
+
+  return plants.filter(plant => {
+    return (
+      (name && plant.name.toLowerCase().includes(name.toLowerCase())) ||
+      (category && plant.category.toLowerCase() === category.toLowerCase())
+    );
   });
 };
 
-const sortPlants=(plants,sortby,order='asc')=>{
-  if(!sortby)
-    return plants;
-  return plants.sort((a,b)=>{
-    if(sortby==="price")
-    {return order ==="asc"? a.price -b.price :b.price -a.price;}
-    if(sortby==="name"){
-      return order ==="asc" ? a.name.localeCompare(b.name):b.name.localeCompare(a.name);
+
+const sortPlants = (plants, sortBy, order = "asc") => {
+  if (!sortBy) return plants;
+
+  return plants.sort((a, b) => {
+    if (sortBy === "price") {
+      return order === "asc" ? a.price - b.price : b.price - a.price;
     }
+
+    if (sortBy === "name") {
+      return order === "asc"
+        ? a.name.localeCompare(b.name)
+        : b.name.localeCompare(a.name);
+    }
+
     return 0;
   });
 };
 
-const getPlantById=(id)=>{
-  return plants.find(p=>p.id==id);
+
+const getPlantById = (id) => {
+  const plant = plants.find(p => p.id == id);
+
+  if (!plant) {
+    const error = new Error("Plant not found");
+    error.status = 404;
+    throw error;
+  }
+
+  return plant;
 };
-module.exports={
+
+module.exports = {
   addPlant,
   getAllPlants,
   updatePlant,
