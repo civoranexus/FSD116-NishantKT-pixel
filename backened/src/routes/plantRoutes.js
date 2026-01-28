@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+
 const {
   addPlant,
   getAllPlants,
@@ -12,6 +13,7 @@ const {
 } = require("../controllers/plantController");
 
 const validatePlant = require("../middleware/validatePlant");
+const authenticateToken = require("../middleware/authMiddleware");
 
 
 router.get("/all", (req, res) => {
@@ -45,8 +47,7 @@ router.get("/:id", (req, res, next) => {
   }
 });
 
-
-router.post("/add", validatePlant, (req, res) => {
+router.post("/add", authenticateToken,validatePlant, (req, res) => {
   const plant = addPlant(req.body);
   res.status(201).json(plant);
 });
