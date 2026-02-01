@@ -1,3 +1,4 @@
+require("./config/db");
 const authRoutes=require("./routes/authRoutes");
 const errorHandler=require("./middleware/errorHandler");
 const express=require("express");

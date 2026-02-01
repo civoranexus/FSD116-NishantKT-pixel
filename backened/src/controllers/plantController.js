@@ -1,101 +1,140 @@
-let plants = [];
 
+const addPlant=(plantData,callback)=>{
+  const{name,price,category}=plantData;
 
-const addPlant = (plantData) => {
-  const { name, price, category } = plantData;
-
-  if (!name || price === undefined || !category) {
-    const error = new Error("All fields (name, price, category) are required");
-    error.status = 400;
-    throw error;
+  if(!name || price===undefined || !category){
+    const error = new Error("All fields are required");
+    error.status=400;
+    return callback(error, null);
   }
 
-  const newPlant = {
-    id: plants.length + 1,
-    name,
-    price,
-    category
-  };
+  const query =`
+    INSERT INTO plants (name, price, category)
+    VALUES (?, ?, ?)`;
 
-  plants.push(newPlant);
-  return newPlant;
+  db.query(query,[name,price,category],(err,result)=>{
+    if(err) return callback(err,null);
+
+    callback(null, {
+      id: result.insertId,
+      name,
+      price,
+      category
+    });
+  });
 };
 
-const getAllPlants = (page = 1, limit = 5) => {
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  return plants.slice(startIndex, endIndex);
+const db = require("../config/db");
+
+const getAllPlants = (page = 1, limit = 5, callback) => {
+  const offset = (page - 1) * limit;
+
+  const query = `
+    SELECT * FROM plants
+    LIMIT ? OFFSET ?
+  `;
+
+  db.query(query, [limit, offset], (err, results) => {
+    if (err) {
+      return callback(err, null);
+    }
+    callback(null, results);
+  });
 };
 
-const updatePlant = (id, updatedData) => {
-  const plant = plants.find(p => p.id == id);
+const updatePlant=(id,updatedData,callback)=>{
+  const {name,price,category}=updatedData;
 
-  if (!plant) {
-    const error = new Error("Plant not found");
-    error.status = 404;
-    throw error;
-  }
+  const query = `
+    UPDATE plants
+    SET name = ?, price = ?, category = ?
+    WHERE id = ?`;
 
-  Object.assign(plant, updatedData);
-  return plant;
+  db.query(query,[name,price,category,id], (err,result)=>{
+    if(err) return callback(err,null);
+
+    if(result.affectedRows===0){
+      const error = new Error("Plant not found");
+      error.status=404;
+      return callback(error,null);
+    }
+
+    callback(null, {
+      id,
+      name,
+      price,
+      category
+    });
+  });
 };
 
+const deletePlant=(id,callback)=>{
+  const query=`DELETE FROM plants WHERE plant_id = ?`;
 
-const deletePlant = (id) => {
-  const index = plants.findIndex(p => p.id == id);
+  db.query(query,[id],(err,result)=>{
+    if(err) return callback(err,null);
 
-  if (index === -1) {
-    const error = new Error("Plant not found");
-    error.status = 404;
-    throw error;
-  }
+    if(result.affectedRows===0){
+      const error = new Error("Plant not found");
+      error.status=404;
+      return callback(error,null);
+    }
 
-  const removedPlant = plants.splice(index, 1);
-  return removedPlant[0];
-};
-
-
-const searchPlants = (query) => {
-  const { name, category } = query;
-
-  return plants.filter(plant => {
-    return (
-      (name && plant.name.toLowerCase().includes(name.toLowerCase())) ||
-      (category && plant.category.toLowerCase() === category.toLowerCase())
-    );
+    callback(null,{message:"Plant deleted successfully"});
   });
 };
 
 
-const sortPlants = (plants, sortBy, order = "asc") => {
-  if (!sortBy) return plants;
 
-  return plants.sort((a, b) => {
-    if (sortBy === "price") {
-      return order === "asc" ? a.price - b.price : b.price - a.price;
+const getPlantById=(id,callback)=>{
+  const query=`SELECT * FROM plants WHERE plant_id = ?`;
+
+  db.query(query,[id],(err,results)=>{
+    if(err) return callback(err,null);
+
+    if (results.length === 0){
+      const error = new Error("Plant not found");
+      error.status = 404;
+      return callback(error,null);
     }
 
-    if (sortBy === "name") {
-      return order === "asc"
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name);
-    }
-
-    return 0;
+    callback(null,results[0]);
   });
 };
 
 
-const getPlantById = (id) => {
-  const plant = plants.find(p => p.id == id);
 
-  if (!plant) {
-    const error = new Error("Plant not found");
-    error.status = 404;
-    throw error;
+const searchPlants=(query,callback)=>{
+  const {name,category}=query;
+
+  let sql ="SELECT * FROM plants WHERE 1=1";
+  let values = [];
+
+  if (name) {
+    sql += " AND name LIKE ?";
+    values.push(`%${name}%`);
   }
 
-  return plant;
+  if (category) {
+    sql += " AND category = ?";
+    values.push(category);
+  }
+
+  db.query(sql, values, (err, results) => {
+    if (err) return callback(err, null);
+
+    if (results.length === 0) {
+      const error = new Error("No plants found");
+      error.status = 404;
+      return callback(error, null);
+    }
+
+    callback(null, results);
+  });
+};
+
+module.exports = {
+  searchPlants
 };
 
 module.exports = {
@@ -104,6 +143,5 @@ module.exports = {
   updatePlant,
   deletePlant,
   getPlantById,
-  searchPlants,
-  sortPlants
+  searchPlants
 };

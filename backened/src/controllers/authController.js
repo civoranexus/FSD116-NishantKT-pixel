@@ -21,9 +21,7 @@ const login=(req,res,next)=>{
             error.status=401;
             throw error;
         }
-        const token=jwt.sign({id:user.id,username:user.username},
-            "secretkey",{expiresIn:"1h"}
-        );
+        const token=jwt.sign({id:user.id,role:user.role},process.env.JWT_SECRET,{expiresIn:"7d"});
         res.status(200).json({message:"Login successful",token});
     }
     catch (error){
